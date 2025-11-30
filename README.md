@@ -1,4 +1,4 @@
-# 区块链客户端 (Blockchain Client)
+#(用于学习) 区块链客户端 (Blockchain Client)
 
 一个基于 Java 实现的轻量级区块链系统，采用 UTXO 模型、PoW 共识机制和 P2P 网络，支持完整的钱包、转账、挖矿等功能。
 
