@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <springProperty scope="context" name="service.name" source="spring.application.name" defaultValue="app"/>
+    <property name="log.level" value="debug" />
+    <property name="log.maxHistory" value="7" />
+    <property name="log.filePath" value="/data/log/${service.name}" />
+    <property name="log.pattern"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] - [%X{TRACE_ID}] %-5level %logger{5}-%L : %msg%n" />
+
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- INFO -->
+    <appender name="infoAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 文件路径 -->
+        <file>${log.filePath}/${service.name}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 文件名称 -->
+            <fileNamePattern>${log.filePath}/logback/${service.name}.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+            <!-- 文件最大保存历史数量 -->
+            <maxHistory>${log.maxHistory}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <logger name="com.xx.xx.mapper" level="${log.level}" additivity="true">
+        <appender-ref ref="infoAppender"/>
+    </logger>
+    <root level="info">
+        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="infoAppender"/>
+    </root>
+</configuration>

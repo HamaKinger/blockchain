@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>区块链客户端 - Blockchain Client</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-cubes"></i>
+                <h1>Blockchain</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-page="overview">
+                    <i class="fas fa-chart-line"></i>
+                    <span>概览</span>
+                </a>
+                <a href="#" class="nav-item" data-page="blocks">
+                    <i class="fas fa-cube"></i>
+                    <span>区块浏览器</span>
+                </a>
+                <a href="#" class="nav-item" data-page="transactions">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>交易记录</span>
+                </a>
+                <a href="#" class="nav-item" data-page="mining">
+                    <i class="fas fa-hammer"></i>
+                    <span>挖矿</span>
+                </a>
+                <a href="#" class="nav-item" data-page="wallet">
+                    <i class="fas fa-wallet"></i>
+                    <span>钱包</span>
+                </a>
+                <a href="#" class="nav-item" data-page="network">
+                    <i class="fas fa-network-wired"></i>
+                    <span>P2P网络</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="node-status">
+                    <div class="status-dot online"></div>
+                    <span>节点在线</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <header class="header">
+                <h2 id="page-title">概览</h2>
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <div class="node-info">
+                        <span class="label">节点:</span>
+                        <span id="node-port">7001</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 概览页面 -->
+            <div id="overview-page" class="page active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="block-height">0</div>
+                            <div class="stat-label">区块高度</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="tx-count">0</div>
+                            <div class="stat-label">交易总数</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="difficulty">4</div>
+                            <div class="stat-label">挖矿难度</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="peer-count">0</div>
+                            <div class="stat-label">连接节点</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card latest-blocks">
+                        <div class="card-header">
+                            <h3>最新区块</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="latest-blocks-list" class="blocks-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="card latest-transactions">
+                        <div class="card-header">
+                            <h3>最新交易</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="latest-transactions-list" class="transactions-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 区块浏览器页面 -->
+            <div id="blocks-page" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>区块链浏览器</h3>
+                        <button class="btn-primary" onclick="createGenesisBlock()">
+                            <i class="fas fa-plus"></i> 创建创世区块
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="blocks-table" class="table-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 交易记录页面 -->
+            <div id="transactions-page" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>交易记录</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="transactions-table" class="table-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 挖矿页面 -->
+            <div id="mining-page" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>挖矿控制台</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mining-controls">
+                            <button class="btn-primary btn-large" id="start-mining" onclick="startMining()">
+                                <i class="fas fa-play"></i> 开始挖矿
+                            </button>
+                            <div class="mining-status">
+                                <div class="status-item">
+                                    <span class="label">挖矿状态:</span>
+                                    <span id="mining-status" class="status-idle">空闲</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">当前难度:</span>
+                                    <span id="current-difficulty">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mining-log">
+                            <h4>挖矿日志</h4>
+                            <div id="mining-log-content" class="log-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 钱包页面 -->
+            <div id="wallet-page" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>我的钱包</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="wallet-info">
+                            <div class="wallet-balance">
+                                <div class="balance-label">余额</div>
+                                <div class="balance-value" id="wallet-balance">0.00 BTC</div>
+                            </div>
+                            <div class="wallet-address">
+                                <div class="address-label">钱包地址</div>
+                                <div class="address-value" id="wallet-address">
+                                    <span id="address-text">未生成</span>
+                                    <button class="btn-copy" onclick="copyAddress()">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 转账功能 -->
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3>转账</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="transfer-form">
+                            <div class="form-group">
+                                <label for="recipient-address">接收地址</label>
+                                <input type="text" id="recipient-address" class="form-input" placeholder="请输入接收方地址">
+                            </div>
+                            <div class="form-group">
+                                <label for="transfer-amount">转账金额 (BTC)</label>
+                                <input type="number" id="transfer-amount" class="form-input" placeholder="请输入转账金额" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="transfer-fee">手续费 (BTC)</label>
+                                <input type="number" id="transfer-fee" class="form-input" placeholder="建议手续费: 0.001" value="0.001" min="0" step="0.001">
+                            </div>
+                            <button class="btn-primary btn-large" onclick="submitTransfer()">
+                                <i class="fas fa-paper-plane"></i> 发送交易
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P2P网络页面 -->
+            <div id="network-page" class="page">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>P2P网络节点</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="network-info">
+                            <div class="network-stat">
+                                <span class="label">本地端口:</span>
+                                <span id="local-port">7001</span>
+                            </div>
+                            <div class="network-stat">
+                                <span class="label">连接节点:</span>
+                                <span id="connected-peers">0</span>
+                            </div>
+                            <div class="network-stat">
+                                <span class="label">连接地址:</span>
+                                <span id="peer-address">ws://192.168.1.9:7002</span>
+                            </div>
+                        </div>
+                        <div class="connect-peer" style="margin-top: 16px;">
+                            <div class="form-group">
+                                <label for="peer-input">手动添加节点地址 (ws:// 或 wss://)</label>
+                                <input type="text" id="peer-input" class="form-input" placeholder="例如: ws://127.0.0.1:7002">
+                            </div>
+                            <button class="btn-primary btn-large" onclick="connectPeer()">
+                                <i class="fas fa-plug"></i> 连接节点
+                            </button>
+                        </div>
+                        <div id="peers-list" class="peers-list"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
